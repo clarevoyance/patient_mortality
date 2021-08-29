@@ -1,7 +1,7 @@
-# ETL Pipeline for Predicting Mortality Rate
+# ML Pipeline for Predicting Mortality Rate
 
 ## Overview
-We will build an ETL pipeline to predict the mortality of a patient given their clinical history. This may include their diagnosis, drug consumption, and laboratory test results. This is a retrospective records-basedstudy on patients from their past electronic health records (EHRs). Care has been taken to remove all personal identifiable information (PII) and/or protected health information (PHI) in compliance with HIPAA research-related rules has been de-identified. 
+We will build an ML pipeline to predict the mortality of a patient given their clinical history. This may include their diagnosis, drug consumption, and laboratory test results. This is a retrospective records-basedstudy on patients from their past electronic health records (EHRs). Care has been taken to remove all personal identifiable information (PII) and/or protected health information (PHI) in compliance with HIPAA research-related rules has been de-identified. 
 
 ## Data
 We will be using the following datasets found in the `/data` folder which are further divided between the training and test data set:
