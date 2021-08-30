@@ -1,17 +1,15 @@
 import utils
 import etl
 import models_partc
+import numpy as np
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import AdaBoostRegressor
+from sklearn.model_selection import KFold
+from sklearn.metrics import *
 
 
 def my_features(events, feature_map):
-	#TODO: complete this
-
 	idx_events = pd.merge(events, feature_map, how='left', on='event_id')
 	idx_events = idx_events.dropna(subset=['value'])
 	idx_events = idx_events.loc[:,('patient_id','idx','value')]
@@ -68,15 +66,39 @@ def my_features(events, feature_map):
 	deliverable.close()
 
 
-def my_classifier_predictions(X_train,Y_train,X_test):
-	#TODO: complete this
-	
-	clf = RandomForestClassifier(random_state=545510477, warm_start=True)
-	clf.fit(X_train, Y_train)
+def my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes):
 
-	Y_pred = clf.predict_proba(X_test)[:, 1]
+	# RANDOM_STATE = 545510477
 
-	return Y_pred
+	kf = KFold(n_splits=5, shuffle=True)
+
+	acc_ = np.array([])
+	auc_ = np.array([])
+
+	for train_index, test_index in kf.split(X):
+		X_train, X_test = X[train_index], X[test_index]
+		Y_train, Y_test = Y[train_index], Y[test_index]
+
+		clf = RandomForestClassifier(oob_score=True)
+									
+									# warm_start=True) 
+									# max_depth=max_depth) 
+
+		clf.fit(X_train, Y_train)
+		
+		Y_pred = clf.predict(X_test)
+
+		acc = accuracy_score(Y_pred, Y_test)
+		auc = roc_auc_score(Y_pred, Y_test)
+		acc_ = np.append(acc_, acc)
+		auc_ = np.append(auc_, auc)
+		oob = clf.oob_score_
+
+	accuracy = np.mean(acc_)
+	auc = np.mean(auc_)
+
+	kaggle_pred = clf.predict_proba(test)[:,1]	
+	return kaggle_pred, accuracy, auc, oob
 
 
 def main():
@@ -85,16 +107,37 @@ def main():
 
 	my_features(events, feature_map)
 
-	X_train, Y_train = utils.get_data_from_svmlight("../deliverables/features_svmlight.train")
-	X_test, Y_test = utils.get_data_from_svmlight("../deliverables/test_features.txt")
+	X, Y = utils.get_data_from_svmlight("../deliverables/features_svmlight.train")
+	test, __ = utils.get_data_from_svmlight("../deliverables/test_features.txt")
 
-	Y_pred = my_classifier_predictions(X_train,Y_train,X_test)
-	print(Y_pred)
+	max_leaf_nodes = None
+	# for i in range(5,40):
+	# 	max_depth = i
+	# 	kaggle_pred, accuracy, auc, oob = my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes)
+	# 	print("==================================")
+	# 	print('Max Depth is', max_depth)
+	# 	print('OOB', oob)
+	# 	print('Accuracy is', accuracy)
+	# 	print('AUC is', auc)
+	# 	print("==================================")
+
+	max_depth = 22
+	kaggle_pred, accuracy, auc, oob = my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes)
+
+	print(kaggle_pred)
+	print()
+	print('==================================')
+	print('Accuracy is', accuracy)
+	print('OOB is', oob)	
+	print('AUC is', auc)
+	print('OOF is', oob)
+	print('==================================')
 
 	#Generate a csv file of (patient_id,predicted label) and will be saved as "my_predictions.csv" in the deliverables folder.
-	utils.generate_submission("../deliverables/test_features.txt", Y_pred)
+	utils.generate_submission("../deliverables/test_features.txt", kaggle_pred)
 	
 if __name__ == "__main__":
     main()
 
-	
+
+# 28, 31

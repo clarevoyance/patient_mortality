@@ -18,7 +18,6 @@ def logistic_regression_pred(X_train, Y_train):
 def svm_pred(X_train, Y_train):
 	clf = LinearSVC(random_state=RANDOM_STATE).fit(X_train, Y_train)
 	Y_pred = clf.predict(X_train)
-
 	return Y_pred
 
 def decisionTree_pred(X_train, Y_train):
