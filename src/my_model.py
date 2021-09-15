@@ -80,9 +80,6 @@ def my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes):
 		Y_train, Y_test = Y[train_index], Y[test_index]
 
 		clf = RandomForestClassifier(oob_score=True)
-									
-									# warm_start=True) 
-									# max_depth=max_depth) 
 
 		clf.fit(X_train, Y_train)
 		
@@ -97,8 +94,12 @@ def my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes):
 	accuracy = np.mean(acc_)
 	auc = np.mean(auc_)
 
-	kaggle_pred = clf.predict_proba(test)[:,1]	
-	return kaggle_pred, accuracy, auc, oob
+	# Soft and hard classifier: feel free to comment out
+	Y_pred = clf.predict_proba(test)[:,1]	
+	Y_pred = clf.predict(test)
+
+
+	return Y_pred, accuracy, auc, oob
 
 
 def main():
@@ -111,18 +112,8 @@ def main():
 	test, __ = utils.get_data_from_svmlight("../deliverables/test_features.txt")
 
 	max_leaf_nodes = None
-	# for i in range(5,40):
-	# 	max_depth = i
-	# 	kaggle_pred, accuracy, auc, oob = my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes)
-	# 	print("==================================")
-	# 	print('Max Depth is', max_depth)
-	# 	print('OOB', oob)
-	# 	print('Accuracy is', accuracy)
-	# 	print('AUC is', auc)
-	# 	print("==================================")
-
-	max_depth = 22
-	kaggle_pred, accuracy, auc, oob = my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes)
+	max_depth = 9
+	Y_pred, accuracy, auc, oob = my_classifier_predictions(X,Y,test,max_depth,max_leaf_nodes)
 
 	print(kaggle_pred)
 	print()
@@ -134,10 +125,7 @@ def main():
 	print('==================================')
 
 	#Generate a csv file of (patient_id,predicted label) and will be saved as "my_predictions.csv" in the deliverables folder.
-	utils.generate_submission("../deliverables/test_features.txt", kaggle_pred)
+	utils.generate_submission("../deliverables/test_features.txt", Y_pred)
 	
 if __name__ == "__main__":
     main()
-
-
-# 28, 31
