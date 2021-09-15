@@ -56,3 +56,5 @@ The model will be validated using a K-Fold cross-validation found in `/src/cross
 The final output will be an exported csv file found in `/deliverables/my_prediction.csv` where the labels may be a soft or hard label (binary or continuous value between 0 and 1) depending on the script in `/src/my_model.py`
 
 The classifier will be tested on the test data at `/deliverables/test_features.txt` that was generated in the script. 
+
+All of this can be self-contained when running the the command `python my_model.py` in the `/src` folder.
