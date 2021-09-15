@@ -41,9 +41,18 @@ This spreadsheet indicates the date `['timestamp']` of death for each patient `[
 
 
 ## Feature Construction
+
+![](assets/window.png)
+
 The goal of this is to construct all potentially relevant features about patients in order to predict the target outcome. The diagnosis date for the target outcome (deceased patients) is reflected in the `mortality_events.csv` for the respective patient. Before the diagnosis date, we have a prediction window of 30 days where the index date is on day 0 of the prediction window. We will have an observation window of 2000 days prior to the index date. We use all patient information during the observation window to construct features. We will also count the number of times each event occurs for a particular patient for diagnosis and drug consumption events. We will use the respective lab results for each patient as a feature. The length of the prediction window and observation window are two important paramters that will impact the model performance.  
 
 ## Predictive Modeling
-As the target outcome is to predict whether a patient will be deceased within the prediction window, this is a binary classification problem.
+As the target outcome is to predict whether a patient will be deceased within the prediction window, this is a binary classification problem. 
 
 ## Model Validation
+The model will be validated using a K-Fold cross-validation found in `/src/cross.py`
+
+## Final Output
+The final output will be an exported csv file found in `/deliverables/my_prediction.csv` where the labels may be a soft or hard label (binary or continuous value between 0 and 1) depending on the script in `/src/my_model.py`
+
+The classifier will be tested on the test data at `/deliverables/test_features.txt` that was generated in the script. 
